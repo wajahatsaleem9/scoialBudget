@@ -1,0 +1,44 @@
+-- database: ./db.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL CHECK(role IN ('admin', 'member'))
+);
+
+CREATE TABLE proposals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    cost INTEGER NOT NULL,
+    phase INTEGER NOT NULL CHECK(phase IN (0, 1, 2)),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE votes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    proposal_id INTEGER NOT NULL,
+    score INTEGER NOT NULL CHECK(score BETWEEN 1 AND 3),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (proposal_id) REFERENCES proposals(id)
+);
+
+CREATE TABLE phases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    current_phase INTEGER NOT NULL CHECK(current_phase BETWEEN 0 AND 3)
+);
+
+CREATE TABLE budget (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    budget INTEGER NOT NULL 
+);
+
+-- Insert initial phase record
+INSERT INTO phases (current_phase) VALUES (0);
+
+INSERT INTO budget(budget) VALUES(0)
+

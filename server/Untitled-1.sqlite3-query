@@ -1,0 +1,25 @@
+-- database: ./db.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+SELECT
+                    p.proposal_id,
+                    u.user_id,
+                    CASE WHEN SUM(p.cost) OVER (PARTITION BY u.user_id ORDER BY p.proposal_id) <= 80 THEN u.username ELSE 'Cost Exceeds Budget' END AS username,
+                    p.description,
+                    p.cost,
+                    SUM(v.score) as Total_score
+                FROM
+                    users u
+                    JOIN proposals p ON p.user_id = u.user_id
+                    JOIN votes v ON v.proposal_id = p.proposal_id
+                GROUP BY
+                    p.proposal_id,
+                    u.user_id,
+                    u.username,
+                    p.description,
+                    p.cost
+                HAVING
+                    SUM(p.cost) <= 80
+                ORDER BY
+                    Total_score DESC;
